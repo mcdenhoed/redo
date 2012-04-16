@@ -130,7 +130,7 @@ class Exit:
     def __init__(self,x,y):
         self.color = SimpleUI.RED
         self.rect = pygame.Rect(x,y,100,100)
-        self.sets = None
+        #self.setBy = None
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect)
 
@@ -140,6 +140,7 @@ class Platform:
         self.rect = pygame.Rect(x,y,w,h)
         self.rect.normalize()
         self.setBy = None
+        self.visibleDefault = True
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect)
 
@@ -159,6 +160,7 @@ class SimpleUI:
         # Initialize PyGame
         pygame.init()
         pygame.display.set_caption("Simple UI")
+        self.selected = None
         self.screen = pygame.display.set_mode((width,height))
         self.screen.fill(SimpleUI.WHITE)
         self.buttons = []
@@ -201,8 +203,12 @@ class SimpleUI:
                         exit = True
                     if event.key == K_SPACE:
                         SimpleUI.state['mode'] = 'move'
+                    if event.key == K_LSHIFT:
+                        SimpleUI.state['mode'] = 'prop'
                 elif event.type == KEYUP:
                     if event.key == K_SPACE:
+                        SimpleUI.state['mode'] = 'none'
+                    if event.key == K_LSHIFT:
                         SimpleUI.state['mode'] = 'none'
                         #SimpleUI.state['mode'] = SimpleUI.state['old']
                 elif event.type == MOUSEBUTTONDOWN:
@@ -218,10 +224,41 @@ class SimpleUI:
         SimpleUI.state['clicked'] = True
         for button in self.buttons:
             if (button.containsPoint(x, y)):
-                SimpleUI.state['clicked'] = False
                 button.do()
+                SimpleUI.state['clicked'] = False
                 but = True
                 break
+        for platform in self.gameRects:
+            if platform.rect.collidepoint(x, y):
+                self.selected = platform.rect
+                if SimpleUI.state['mode'] is not 'prop': SimpleUI.state['mode'] = 'drag'
+                else:
+                    platform.setBy = eg.enterbox('ButtonGroup to that sets this platform')
+                    if eg.boolbox("Platform visible by default?", "One more thing", ["Yes", "No"]):
+                        platform.visibleDefault = True
+                    else:
+                        platform.visibleDefault = False
+                but = True
+                break    
+        for gbutton in self.gameButtons:
+            if gbutton.rect.collidepoint(x,y):
+                self.selected = gbutton.rect
+                if SimpleUI.state['mode'] is not 'prop': SimpleUI.state['mode'] = 'drag'
+                else:
+                    gbutton.sets = eg.enterbox('Object Group to set')
+                but = True
+        for recorder in self.gameRecorders:
+            if recorder.rect.collidepoint(x,y):
+                self.selected = recorder.rect
+                but = True
+        if self.gamePlayer.rect.collidepoint(x,y):
+            self.selected = self.gamePlayer.rect
+            SimpleUI.state['mode'] = 'drag'
+            but = True
+        elif self.gameExit.rect.collidepoint(x,y):
+            self.selected = self.gameExit.rect
+            SimpleUI.state['mode'] = 'drag'
+            but = True
         if not but:
             if SimpleUI.state['mode'] == 'rect':
                 SimpleUI.LAST = [x,y]
@@ -247,13 +284,20 @@ class SimpleUI:
            if (temp.rect.width > 50 and temp.rect.height > 100) or (temp.rect.width > 100 and temp.rect.height > 50):
                 self.gameRects.append(temp)
         SimpleUI.state['clicked'] = False
+        self.selected = None
 
     def handleMouseMotion(self, (x,y)):
-        if SimpleUI.state['clicked'] is True and SimpleUI.state['mode'] is 'move': 
+        if SimpleUI.state['clicked'] is True: 
             xo,yo = [a-b for a,b in zip([x,y], SimpleUI.CURRENT)]
-            self.moveEverything((xo,yo))
+            if SimpleUI.state['mode'] is 'move':
+                self.moveEverything((xo,yo))
+            elif SimpleUI.state['mode'] is 'drag' and self.selected is not None:
+                self.moveSomething((xo,yo))
         SimpleUI.CURRENT = [x,y]
             
+    def moveSomething(self, (x,y)):
+        self.selected.move_ip(x,y)
+
     def moveEverything(self, (x,y)):
         for gbutton in self.gameButtons:
             gbutton.rect.move_ip(x,y)
