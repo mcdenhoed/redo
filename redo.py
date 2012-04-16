@@ -35,5 +35,5 @@ while True:
             
     update()
     draw()
-    timer.tick(60)
+    timer.tick(10)
 

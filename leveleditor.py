@@ -1,0 +1,291 @@
+import pygame
+import cPickle as pickle
+import sys, os
+from pygame.locals import *
+import easygui as eg
+
+class MyButton:
+    """Button class based on the
+    template method pattern."""
+    
+    def __init__(self, x, y, w, h):
+        self.rect = Rect(x, y, w, h)
+        self.msg = ""
+    def containsPoint(self, x, y):
+        return self.rect.collidepoint(x, y)
+    def draw(self, surface):
+        # You could of course use pictures here.
+        # This method could also be implemented
+        # by subclasses.
+        pygame.draw.rect(
+            surface,
+            (150,150,150), #gray
+            self.rect,
+            )
+        # Here's some stuff
+        font = pygame.font.Font(None, 24)
+        text = font.render(self.msg, 1, (10,10,10))
+        textpos = text.get_rect(center=self.rect.center)
+        surface.blit(text, textpos)
+    def do(self):
+        print "Impbement in subclasses"
+
+class RectButton(MyButton):
+    def __init__(self, x, y, w, h, app):
+        # This is how you call the superclass init
+        MyButton.__init__(self, x, y, w, h)
+        self.app = app
+        self.msg = "Platform"
+    def do(self):
+        SimpleUI.state['mode'] = 'rect'
+        
+class PlayerButton(MyButton):
+    def __init__(self, x, y, w, h, app):
+        MyButton.__init__(self, x, y, w, h)
+        self.app = app
+        self.msg = "Player"
+    def do(self):
+        SimpleUI.state['mode'] = 'player'
+
+class ExitButton(MyButton):
+    def __init__(self, x, y, w, h, app):
+        MyButton.__init__(self, x, y, w, h)
+        self.app = app
+        self.msg = "Exit"
+    def do(self):
+        SimpleUI.state['mode'] = 'exit'
+
+class ButtonButton(MyButton):
+    def __init__(self, x, y, w, h, app):
+        MyButton.__init__(self, x, y, w, h)
+        self.app = app
+        self.msg = "Button"
+    def do(self):
+        SimpleUI.state['mode'] = 'button'
+
+class RecorderButton(MyButton):
+    def __init__(self, x, y, w, h, app):
+        MyButton.__init__(self, x, y, w, h)
+        self.app = app
+        self.msg = "Recorder"
+    def do(self):
+        SimpleUI.state['mode'] = 'recorder'
+
+class SaveButton(MyButton):
+    def __init__(self, x, y, w, h, app):
+        MyButton.__init__(self, x, y, w, h)
+        self.filename = 'default'
+        self.msg = 'Save'
+        self.app = app
+    def do(self):
+        level = LevelFormat(self.app.gamePlayer, self.app.gameRecorders, self.app.gameButtons, self.app.gameRects, self.app.gameExit)
+        self.filename = eg.enterbox(msg='Enter a filename for saving.', title='Saving Stuff', default=self.filename)
+        if self.filename is not None:
+            pickle.dump(level, open(os.path.join('assets', 'levels', self.filename + '.p'), 'wb'))
+        
+class LoadButton(MyButton):
+    def __init__(self, x, y, w, h, app):
+        MyButton.__init__(self, x, y, w, h)
+        self.app = app
+        self.msg = "Load"
+        self.filename = None
+    def do(self):
+        self.filename = eg.enterbox(msg='Enter a file to load.', title='Loading Stuff')
+        if self.filename is not None:
+            level = pickle.load(open(os.path.join('assets', 'levels', self.filename + '.p'), 'rb'))
+            self.app.gamePlayer, self.app.gameRecorders, self.app.gameButtons, self.app.gameRects, self.app.gameExit = level.player, level.recorders, level.buttons, level.platforms, level.exit
+class LevelFormat:
+    def __init__(self, player, recorders, buttons, platforms, exit):
+        self.player = player
+        self.recorders = recorders
+        self.buttons = buttons
+        self.platforms = platforms
+        self.exit = exit
+        
+class Player:
+    def __init__(self, x,y, w, h):
+        self.color = SimpleUI.BLUE
+        self.rect = pygame.Rect(x,y,w,h)
+    
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
+
+class Recorder:
+    def __init__(self,x,y):
+        self.color = SimpleUI.ORANGE
+        self.rect = pygame.Rect(x,y,100,100)
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
+
+class Button:
+    def __init__(self,x,y):
+        self.color = SimpleUI.PURPLE
+        self.rect = pygame.Rect(x,y,70,70)
+        self.sets = None
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
+
+class Exit:
+    def __init__(self,x,y):
+        self.color = SimpleUI.RED
+        self.rect = pygame.Rect(x,y,100,100)
+        self.sets = None
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
+
+class Platform:
+    def __init__(self, x, y, w, h):
+        self.color = SimpleUI.BLACK
+        self.rect = pygame.Rect(x,y,w,h)
+        self.rect.normalize()
+        self.setBy = None
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
+
+class SimpleUI:
+    state = {'mode' : 'none', 'clicked' : False}
+    RED = (255,0,0)
+    BLUE = (0,0,255)
+    GREEN = (0,255,0)
+    ORANGE = (255,255,0)
+    PURPLE = (255,0,255)
+    AQUA = (0,255,255)
+    BLACK = (0,0,0)
+    WHITE = (255,255,255)
+    LAST = [0,0]
+    CURRENT = [0,0]
+    def __init__(self, width=1000, height=500):
+        # Initialize PyGame
+        pygame.init()
+        pygame.display.set_caption("Simple UI")
+        self.screen = pygame.display.set_mode((width,height))
+        self.screen.fill(SimpleUI.WHITE)
+        self.buttons = []
+        self.addButton(RectButton(20, 20, 100, 50, self))
+        self.addButton(PlayerButton(20, 90, 100, 50, self))
+        self.addButton(ExitButton(20, 160, 100, 50, self))
+        self.addButton(ButtonButton(20, 230, 100, 50, self))
+        self.addButton(RecorderButton(20, 300, 100, 50, self))
+        self.addButton(LoadButton(20, 370, 100, 50, self))
+        self.addButton(SaveButton(20, 440, 100, 50, self))
+        self.gameButtons = []
+        self.gamePlayer = Player(200, 200, 30, 30)
+        self.gameRects = []
+        self.gameRecorders = []
+        self.gameExit = Exit(400, 200)
+    def addButton(self, button):
+        self.buttons = self.buttons + [button]
+        
+    def run(self):
+        # Run the event loop
+        self.loop()
+        # Close the Pygame window
+        pygame.quit()
+    
+    def loop(self):
+        clock = pygame.time.Clock()
+        exit = False
+        while not exit:
+            exit = self.handleEvents()
+            self.draw()
+            clock.tick(30) 
+
+    def handleEvents(self):
+            exit = False
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    exit = True
+                elif event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        exit = True
+                    if event.key == K_SPACE:
+                        SimpleUI.state['mode'] = 'move'
+                elif event.type == KEYUP:
+                    if event.key == K_SPACE:
+                        SimpleUI.state['mode'] = 'none'
+                        #SimpleUI.state['mode'] = SimpleUI.state['old']
+                elif event.type == MOUSEBUTTONDOWN:
+                    self.handleMouseDown(pygame.mouse.get_pos())
+                elif event.type == MOUSEBUTTONUP:
+                    self.handleMouseUp(pygame.mouse.get_pos())
+                elif event.type == MOUSEMOTION:
+                    self.handleMouseMotion(pygame.mouse.get_pos())
+            return exit
+
+    def handleMouseDown(self, (x, y)):
+        but = False
+        SimpleUI.state['clicked'] = True
+        for button in self.buttons:
+            if (button.containsPoint(x, y)):
+                SimpleUI.state['clicked'] = False
+                button.do()
+                but = True
+                break
+        if not but:
+            if SimpleUI.state['mode'] == 'rect':
+                SimpleUI.LAST = [x,y]
+            if SimpleUI.state['mode'] == 'player':
+                self.gamePlayer.rect.center = (x,y)
+            if SimpleUI.state['mode'] == 'recorder':
+                temp = Recorder(x,y)
+                temp.rect.center = (x,y)
+                self.gameRecorders.append(temp)
+            if SimpleUI.state['mode'] == 'button':
+                temp = Button(x,y)
+                temp.rect.center = (x,y)
+                self.gameButtons.append(temp)
+            if SimpleUI.state['mode'] == 'exit':
+                self.gameExit.rect.center = (x,y)
+            if SimpleUI.state['mode'] == 'move':
+                SimpleUI.LAST = [x,y]
+                             
+    def handleMouseUp(self, (x,y)):
+        if SimpleUI.state['mode'] == 'rect' and SimpleUI.state['clicked'] is True:
+           width, height = [a-b for a,b in zip([x,y], SimpleUI.LAST)]
+           temp = Platform(SimpleUI.LAST[0], SimpleUI.LAST[1], width, height)
+           if (temp.rect.width > 50 and temp.rect.height > 100) or (temp.rect.width > 100 and temp.rect.height > 50):
+                self.gameRects.append(temp)
+        SimpleUI.state['clicked'] = False
+
+    def handleMouseMotion(self, (x,y)):
+        if SimpleUI.state['clicked'] is True and SimpleUI.state['mode'] is 'move': 
+            xo,yo = [a-b for a,b in zip([x,y], SimpleUI.CURRENT)]
+            self.moveEverything((xo,yo))
+        SimpleUI.CURRENT = [x,y]
+            
+    def moveEverything(self, (x,y)):
+        for gbutton in self.gameButtons:
+            gbutton.rect.move_ip(x,y)
+        for recorder in self.gameRecorders:
+            recorder.rect.move_ip(x,y)
+        for lev in self.gameRects:
+            lev.rect.move_ip(x,y)
+        self.gamePlayer.rect.move_ip(x,y)
+        self.gameExit.rect.move_ip(x,y)
+
+    def draw(self):
+        self.screen.fill(SimpleUI.WHITE)
+        if SimpleUI.state['mode'] == 'rect' and SimpleUI.state['clicked'] is True:
+            width = SimpleUI.CURRENT[0] - SimpleUI.LAST[0]
+            height = SimpleUI.CURRENT[1] - SimpleUI.LAST[1]
+            temp = pygame.Rect(SimpleUI.LAST, (width, height))
+            temp.normalize()
+            if (temp.width > 50 and temp.height > 100) or (temp.width > 100 and temp.height > 50):
+                pygame.draw.rect(self.screen, SimpleUI.GREEN, temp)
+            else:
+                pygame.draw.rect(self.screen, SimpleUI.RED, temp)
+        for gbutton in self.gameButtons:
+            gbutton.draw(self.screen)
+        for recorder in self.gameRecorders:
+            recorder.draw(self.screen)
+        self.gamePlayer.draw(self.screen)
+        self.gameExit.draw(self.screen)
+        for lev in self.gameRects:
+            lev.draw(self.screen)
+        for button in self.buttons:
+            button.draw(self.screen)
+        pygame.display.update()
+            
+# Start the program
+SimpleUI().run()

@@ -25,6 +25,7 @@ class Actor(pygame.sprite.Sprite):
         
     def update(self, offset=[0.0, 0.0]):
         self.pos = [a[0]+a[1]+Actor.velDamp*a[2] for a in zip(self.pos, offset, self.vel)]
+        #On above line: self.pos = [a +b + Actor.velDamp*c for a, b, c in zip(stuff)]
         if self.vel[0] > self.maxVel:
             self.acc[0] = 0
 
@@ -37,7 +38,7 @@ class Actor(pygame.sprite.Sprite):
                 self.acc[0] = -.12*self.vel[0]
 
         self.rect.left, self.rect.top = int(self.pos[0]), int(self.pos[1])
-
+://mail.google.com/mail/u/0/#inbox
         if self.left:
             self.leftPress()
             self.dtheta = -5
