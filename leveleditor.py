@@ -281,7 +281,7 @@ class SimpleUI:
         if SimpleUI.state['mode'] == 'rect' and SimpleUI.state['clicked'] is True:
            width, height = [a-b for a,b in zip([x,y], SimpleUI.LAST)]
            temp = Platform(SimpleUI.LAST[0], SimpleUI.LAST[1], width, height)
-           if (temp.rect.width > 50 and temp.rect.height > 100) or (temp.rect.width > 100 and temp.rect.height > 50):
+           if temp.rect.width > 30 and temp.rect.height > 30:
                 self.gameRects.append(temp)
         SimpleUI.state['clicked'] = False
         self.selected = None
@@ -315,7 +315,7 @@ class SimpleUI:
             height = SimpleUI.CURRENT[1] - SimpleUI.LAST[1]
             temp = pygame.Rect(SimpleUI.LAST, (width, height))
             temp.normalize()
-            if (temp.width > 50 and temp.height > 100) or (temp.width > 100 and temp.height > 50):
+            if temp.width > 30 and temp.height > 30:
                 pygame.draw.rect(self.screen, SimpleUI.GREEN, temp)
             else:
                 pygame.draw.rect(self.screen, SimpleUI.RED, temp)

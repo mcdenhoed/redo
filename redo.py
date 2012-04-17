@@ -1,7 +1,8 @@
 #Hello! This is my game.
 import pygame
 import sys
-from player import * 
+import player as p
+import level as l
 from pygame.locals import *
 width = 1000
 height = 600
@@ -9,8 +10,13 @@ pygame.init()
 timer = pygame.time.Clock()
 #mouse = 0,0 #Needed for menus?
 screen = pygame.display.set_mode((width, height))
-player = Player(100.0,100.0)
+player = p.Player(100.0,100.0)
 actors = pygame.sprite.RenderClear((player))
+levels = {}
+path = os.join('assets', 'levels')
+for inFile in os.listdir(path):
+    levels.add(l.Level(inFile)
+
 def update():
     """Updates objects in the scene."""
     actors.update()
