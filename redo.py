@@ -1,6 +1,6 @@
 #Hello! This is my game.
 import pygame
-import sys
+import sys, os
 import player as p
 import level as l
 from pygame.locals import *
@@ -11,11 +11,12 @@ timer = pygame.time.Clock()
 #mouse = 0,0 #Needed for menus?
 screen = pygame.display.set_mode((width, height))
 player = p.Player(100.0,100.0)
-actors = pygame.sprite.RenderClear((player))
-levels = {}
-path = os.join('assets', 'levels')
+actors = pygame.sprite.RenderUpdates((player))
+levels = []
+path = os.path.join('assets', 'levels')
 for inFile in os.listdir(path):
-    levels.add(l.Level(inFile)
+    temp = l.Level(os.path.join(path,inFile))
+    levels.append(temp)
 
 def update():
     """Updates objects in the scene."""
@@ -23,8 +24,8 @@ def update():
 
 def draw():
     screen.fill((200,200,200))
-    actors.draw(screen)
-    pygame.display.flip()
+    things = actors.draw(screen)
+    pygame.display.update(things)
 
 while True:
     for event in pygame.event.get():

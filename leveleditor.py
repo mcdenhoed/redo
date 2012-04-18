@@ -4,6 +4,15 @@ import sys, os
 from pygame.locals import *
 import easygui as eg
 
+class Level:
+    def __init__(self, levelFile):
+        levelFormat = pickle.load(open(levelFile,'rb'))
+        self.playerInitial = levelFormat.player.rect.center
+        #self.recorders = [recorder.Recorder(r) for r in levelFormat.recorders]
+        self.platforms = [platform.Platform(p) for p in levelFormat.platforms]
+        self.exit = exit.Exit(levelFormat.exit)
+        self.buttons = [button.Button(b) for b in levelFormat.buttons]
+
 class MyButton:
     """Button class based on the
     template method pattern."""
@@ -78,7 +87,7 @@ class SaveButton(MyButton):
         self.msg = 'Save'
         self.app = app
     def do(self):
-        level = LevelFormat(self.app.gamePlayer, self.app.gameRecorders, self.app.gameButtons, self.app.gameRects, self.app.gameExit)
+        level = leveleditor.LevelFormat(self.app.gamePlayer, self.app.gameRecorders, self.app.gameButtons, self.app.gameRects, self.app.gameExit)
         self.filename = eg.enterbox(msg='Enter a filename for saving.', title='Saving Stuff', default=self.filename)
         if self.filename is not None:
             pickle.dump(level, open(os.path.join('assets', 'levels', self.filename + '.p'), 'wb'))
@@ -101,7 +110,6 @@ class LevelFormat:
         self.buttons = buttons
         self.platforms = platforms
         self.exit = exit
-        
 class Player:
     def __init__(self, x,y, w, h):
         self.color = SimpleUI.BLUE
@@ -332,4 +340,5 @@ class SimpleUI:
         pygame.display.update()
             
 # Start the program
-SimpleUI().run()
+if __name__ == '__main__':
+    SimpleUI().run()
