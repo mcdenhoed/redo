@@ -1,4 +1,4 @@
-from leveleditor import Button as bf
+from levelformat import Button as bf
 import pygame
 import os
 class Button(pygame.sprite.Sprite):
@@ -6,11 +6,12 @@ class Button(pygame.sprite.Sprite):
     def __init__(self, buttonFormat):
         pygame.sprite.Sprite.__init__(self)
         if not Button.images:
-            imgpath = os.path.join("assets", "images")
-            Button.images['inactive'] = pygame.image.load(imgpath + "buttonInact.png").convert_alpha()
-            Button.images['active'] = pygame.image.load(imgpath + "buttonAct.png").convert_alpha()
+            inactiveImgPath = os.path.join("assets", "images", "buttonInactive.png")
+            activeImgPath = os.path.join("assets", "images", "buttonActive.png")
+            Button.images['inactive'] = pygame.image.load(inactiveImgPath).convert_alpha()
+            Button.images['active'] = pygame.image.load(activeImgPath).convert_alpha()
         self.image = Button.images['inactive']
         self.rect = self.image.get_rect()
         self.activated = False
         self.group = buttonFormat.sets
-        self.rect.center = buttonFormat.rect.center 
+        self.rect.bottomleft = buttonFormat.rect.bottomleft 

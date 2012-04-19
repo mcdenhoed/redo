@@ -3,15 +3,7 @@ import cPickle as pickle
 import sys, os
 from pygame.locals import *
 import easygui as eg
-
-class Level:
-    def __init__(self, levelFile):
-        levelFormat = pickle.load(open(levelFile,'rb'))
-        self.playerInitial = levelFormat.player.rect.center
-        #self.recorders = [recorder.Recorder(r) for r in levelFormat.recorders]
-        self.platforms = [platform.Platform(p) for p in levelFormat.platforms]
-        self.exit = exit.Exit(levelFormat.exit)
-        self.buttons = [button.Button(b) for b in levelFormat.buttons]
+import levelformat 
 
 class MyButton:
     """Button class based on the
@@ -87,7 +79,7 @@ class SaveButton(MyButton):
         self.msg = 'Save'
         self.app = app
     def do(self):
-        level = leveleditor.LevelFormat(self.app.gamePlayer, self.app.gameRecorders, self.app.gameButtons, self.app.gameRects, self.app.gameExit)
+        level = levelformat.LevelFormat(self.app.gamePlayer, self.app.gameRecorders, self.app.gameButtons, self.app.gameRects, self.app.gameExit)
         self.filename = eg.enterbox(msg='Enter a filename for saving.', title='Saving Stuff', default=self.filename)
         if self.filename is not None:
             pickle.dump(level, open(os.path.join('assets', 'levels', self.filename + '.p'), 'wb'))
@@ -103,67 +95,15 @@ class LoadButton(MyButton):
         if self.filename is not None:
             level = pickle.load(open(os.path.join('assets', 'levels', self.filename + '.p'), 'rb'))
             self.app.gamePlayer, self.app.gameRecorders, self.app.gameButtons, self.app.gameRects, self.app.gameExit = level.player, level.recorders, level.buttons, level.platforms, level.exit
-class LevelFormat:
-    def __init__(self, player, recorders, buttons, platforms, exit):
-        self.player = player
-        self.recorders = recorders
-        self.buttons = buttons
-        self.platforms = platforms
-        self.exit = exit
-class Player:
-    def __init__(self, x,y, w, h):
-        self.color = SimpleUI.BLUE
-        self.rect = pygame.Rect(x,y,w,h)
-    
-    def draw(self, surface):
-        pygame.draw.rect(surface, self.color, self.rect)
-
-class Recorder:
-    def __init__(self,x,y):
-        self.color = SimpleUI.ORANGE
-        self.rect = pygame.Rect(x,y,100,100)
-
-    def draw(self, surface):
-        pygame.draw.rect(surface, self.color, self.rect)
-
-class Button:
-    def __init__(self,x,y):
-        self.color = SimpleUI.PURPLE
-        self.rect = pygame.Rect(x,y,70,70)
-        self.sets = None
-    def draw(self, surface):
-        pygame.draw.rect(surface, self.color, self.rect)
-
-class Exit:
-    def __init__(self,x,y):
-        self.color = SimpleUI.RED
-        self.rect = pygame.Rect(x,y,100,100)
-        #self.setBy = None
-    def draw(self, surface):
-        pygame.draw.rect(surface, self.color, self.rect)
-
-class Platform:
-    def __init__(self, x, y, w, h):
-        self.color = SimpleUI.BLACK
-        self.rect = pygame.Rect(x,y,w,h)
-        self.rect.normalize()
-        self.setBy = None
-        self.visibleDefault = True
-    def draw(self, surface):
-        pygame.draw.rect(surface, self.color, self.rect)
 
 class SimpleUI:
     state = {'mode' : 'none', 'clicked' : False}
-    RED = (255,0,0)
-    BLUE = (0,0,255)
-    GREEN = (0,255,0)
-    ORANGE = (255,255,0)
-    PURPLE = (255,0,255)
-    AQUA = (0,255,255)
-    BLACK = (0,0,0)
-    WHITE = (255,255,255)
     LAST = [0,0]
     CURRENT = [0,0]
+    WHITE = (255,255,255)
+    BLUE = (0,0,255)
+    GREEN = (0,255,0)
+    RED = (255,0,0)
     def __init__(self, width=1000, height=500):
         # Initialize PyGame
         pygame.init()
@@ -180,10 +120,10 @@ class SimpleUI:
         self.addButton(LoadButton(20, 370, 100, 50, self))
         self.addButton(SaveButton(20, 440, 100, 50, self))
         self.gameButtons = []
-        self.gamePlayer = Player(200, 200, 30, 30)
+        self.gamePlayer = levelformat.Player(200, 200, 30, 30)
         self.gameRects = []
         self.gameRecorders = []
-        self.gameExit = Exit(400, 200)
+        self.gameExit = levelformat.Exit(400, 200)
     def addButton(self, button):
         self.buttons = self.buttons + [button]
         
@@ -273,11 +213,11 @@ class SimpleUI:
             if SimpleUI.state['mode'] == 'player':
                 self.gamePlayer.rect.center = (x,y)
             if SimpleUI.state['mode'] == 'recorder':
-                temp = Recorder(x,y)
+                temp = levelformat.Recorder(x,y)
                 temp.rect.center = (x,y)
                 self.gameRecorders.append(temp)
             if SimpleUI.state['mode'] == 'button':
-                temp = Button(x,y)
+                temp = levelformat.Button(x,y)
                 temp.rect.center = (x,y)
                 self.gameButtons.append(temp)
             if SimpleUI.state['mode'] == 'exit':
@@ -288,7 +228,7 @@ class SimpleUI:
     def handleMouseUp(self, (x,y)):
         if SimpleUI.state['mode'] == 'rect' and SimpleUI.state['clicked'] is True:
            width, height = [a-b for a,b in zip([x,y], SimpleUI.LAST)]
-           temp = Platform(SimpleUI.LAST[0], SimpleUI.LAST[1], width, height)
+           temp = levelformat.Platform(SimpleUI.LAST[0], SimpleUI.LAST[1], width, height)
            if temp.rect.width > 30 and temp.rect.height > 30:
                 self.gameRects.append(temp)
         SimpleUI.state['clicked'] = False

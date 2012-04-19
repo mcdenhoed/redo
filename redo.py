@@ -17,15 +17,18 @@ path = os.path.join('assets', 'levels')
 for inFile in os.listdir(path):
     temp = l.Level(os.path.join(path,inFile))
     levels.append(temp)
+background = pygame.Surface([width,height])
+background.fill([200,200,200])
+screen.blit(background, [0,0])
 
 def update():
     """Updates objects in the scene."""
     actors.update()
 
 def draw():
-    screen.fill((200,200,200))
     things = actors.draw(screen)
     pygame.display.update(things)
+    actors.clear(screen,background)
 
 while True:
     for event in pygame.event.get():
