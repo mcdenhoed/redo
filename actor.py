@@ -2,7 +2,7 @@ import pygame
 import sys, os
 
 class Actor(pygame.sprite.Sprite):
-    grav = 2.9
+    grav = 6#2.9
     maxVel = 70
     velDamp = .1
     accDamp = .35
@@ -34,7 +34,7 @@ class Actor(pygame.sprite.Sprite):
     def update(self, offset=[0.0, 0.0]):
         self.pos = [a[0]+a[1]+Actor.velDamp*a[2] for a in zip(self.pos, offset, self.vel)]
         #On above line: self.pos = [a +b + Actor.velDamp*c for a, b, c in zip(stuff)]
-        if self.vel[0] > Actor.maxVel and self.acc[0]*self.vel[0] > 0:
+        if abs(self.vel[0]) > Actor.maxVel and self.acc[0]*self.vel[0] > 0:
             self.acc[0] = 0
 
         self.vel = [a[0]+Actor.accDamp*a[1] for a in zip(self.vel, self.acc)]
