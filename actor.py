@@ -25,7 +25,7 @@ class Actor(pygame.sprite.Sprite):
     
     def jump(self):
         if self.onGround is True:
-            self.vel[1] = -40
+            self.vel[1] = -80
     def offset(self, x, y):
         self.pos = [a[0] + a[1] for a in zip(self.pos, [x,y])]
         self.rect.center = self.pos

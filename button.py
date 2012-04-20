@@ -14,4 +14,10 @@ class Button(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.activated = False
         self.group = buttonFormat.sets
-        self.rect.bottomleft = buttonFormat.rect.bottomleft 
+        self.pos = self.rect.bottomleft = buttonFormat.rect.bottomleft
+
+    def update(self, offset):
+         self.pos = [a + b for a,b in zip(self.pos, offset)]
+         self.rect.bottomleft = self.pos
+         
+

@@ -5,7 +5,10 @@ import pygame
 import sys, os
 import player as p
 import level as l
+import camera as c
 from pygame.locals import *
+
+
 
 #############################
 ##initializing pygame stuff##
@@ -32,12 +35,14 @@ actorsprites = pygame.sprite.Group()
 platformsprites = pygame.sprite.Group()
 buttonsprites = pygame.sprite.Group()
 
+
 def update():
     """Updates objects in the scene."""
    #sprites.update()
-    actorsprites.update()
-    buttonsprites.update()
-    platformsprites.update([0,0])
+    off = camera.update(playerSprite.rect.center)
+    actorsprites.update(off)
+    buttonsprites.update(off)
+    platformsprites.update(off)
     sd = pygame.sprite.groupcollide(actorsprites, platformsprites, False, False)
     for a in sd:
         for p in sd[a]:
@@ -46,6 +51,7 @@ def update():
             while a.rect.bottom > p.rect.top > a.rect.top:
                 a.offset(0,-1)          
 def draw():
+    #sprites.clear(screen, background)
     things = sprites.draw(screen)
     pygame.display.update(things)
     sprites.clear(screen,background)
@@ -55,10 +61,11 @@ while i < len(levels):
     sprites.empty()
     platformsprites.empty()
     buttonsprites.empty()
+    camera = c.Camera(width, height)
     exitSprite = levels[i].exit
     playerSprite = p.Player(levels[i].playerInitial)
     actorsprites.add(playerSprite)
-    buttonsprites.add(levels[i].buttons) 
+    buttonsprites.add(levels[i].buttons, exitSprite) 
     platformsprites.add(levels[i].platforms)
     sprites.add(playerSprite)
     sprites.add(levels[i].buttons)

@@ -4,6 +4,7 @@ import pygame
 
 class Exit(pygame.sprite.Sprite):
     image = None
+    
     def __init__(self, exitFormat):
         print "new exit"
         pygame.sprite.Sprite.__init__(self)
@@ -12,4 +13,8 @@ class Exit(pygame.sprite.Sprite):
             Exit.image = pygame.image.load(imgpath).convert_alpha()
         self.image = Exit.image
         self.rect = self.image.get_rect()
-        self.rect.center = exitFormat.rect.center
+        self.pos = self.rect.center = exitFormat.rect.center
+    
+    def update(self, offset):
+        self.pos = [a + b for a,b in zip(self.pos, offset)]
+        self.rect.center = self.pos
