@@ -25,6 +25,8 @@ class RedoGame():
         ###########################
         path = os.path.join('assets', 'levels')
         self.levels = []
+        self.states = set()
+        self.switchers = []
         for inFile in os.listdir(path):
             temp = l.Level(os.path.join(path,inFile))
             self.levels.append(temp)
@@ -37,43 +39,77 @@ class RedoGame():
         self.platformsprites = pygame.sprite.Group()
         self.buttonsprites = pygame.sprite.Group()
 
-    def update(self):
-        """Updates objects in the scene."""
-        #sprites.update()
-        off = self.camera.update(self.playerSprite.rect.center)
-        self.actorsprites.update(off)
-        self.buttonsprites.update(off)
-        self.platformsprites.update(off)
+    def updatePlatforms(self, offset):
+        self.platformsprites.update(offset)
+        for s in self.switchers:
+            if s.group in self.states:
+                s.visible = True
+                self.sprites.add(s)
+            else:
+                s.visible = False
+                if s in self.sprites.sprites():
+                    self.sprites.remove(s)
+
         sd = pygame.sprite.groupcollide(self.actorsprites, self.platformsprites, False, False)
         for a in sd:
             for p in sd[a]:
                 if a.rect.bottom > p.rect.top > a.rect.top:
                     a.onGround = True
                 while a.rect.bottom > p.rect.top > a.rect.top:
-                    a.offset(0,-1)          
+                    a.offset(0,-1)
+        
+    def updateButtons(self, offset):
+        self.buttonsprites.update(offset)
+        on = pygame.sprite.groupcollide(self.buttonsprites, self.actorsprites, False, False).keys()
+        for button in self.buttonsprites.sprites():
+            if button in on:
+                button.activate()
+                self.states.add(button.group)
+            else:
+                button.deactivate()
+                if button.group in self.states:
+                    self.states.remove(button.group)
+            
+    def update(self):
+        """Updates objects in the scene."""
+        #sprites.update()
+        off = self.camera.update(self.playerSprite.rect.center)
+        self.actorsprites.update(off)
+        self.updateButtons(off)
+        self.updatePlatforms(off)
+        self.exitSprite.update(off)
+
     def draw(self):
-        #sprites.clear(screen, background)
+        self.sprites.clear(self.screen, self.background)
         things = self.sprites.draw(self.screen)
+        #self.sprites.clear(self.screen,self.background)
         pygame.display.update(things)
-        self.sprites.clear(self.screen,self.background)
+        
+        pygame.display.flip()
+        #self.sprites.clear(self.screen,self.background)
+
+    def levelInit(self, i):
+        self.actorsprites.empty()
+        self.sprites.empty()
+        self.platformsprites.empty()
+        self.buttonsprites.empty()
+        self.camera = c.Camera(self.width, self.height)
+        self.exitSprite = self.levels[i].exit
+        self.playerSprite = p.Player(self.levels[i].playerInitial)
+        self.actorsprites.add(self.playerSprite)
+        self.buttonsprites.add(self.levels[i].buttons)
+        self.platformsprites.add(self.levels[i].platforms)
+        self.switchers = [a for a in self.platformsprites.sprites() if a.group is not None]
+        self.sprites.add(self.playerSprite)
+        self.sprites.add(self.levels[i].buttons)
+        self.sprites.add([a for a in self.levels[i].platforms if a.visible is True])
+        self.sprites.add(self.exitSprite)
+
 
     def mainLoop(self):
         i = 0    
         while i < len(self.levels):
-            self.actorsprites.empty()
-            self.sprites.empty()
-            self.platformsprites.empty()
-            self.buttonsprites.empty()
-            self.camera = c.Camera(self.width, self.height)
-            self.exitSprite = self.levels[i].exit
-            self.playerSprite = p.Player(self.levels[i].playerInitial)
-            self.actorsprites.add(self.playerSprite)
-            self.buttonsprites.add(self.levels[i].buttons, self.exitSprite) 
-            self.platformsprites.add(self.levels[i].platforms)
-            self.sprites.add(self.playerSprite)
-            self.sprites.add(self.levels[i].buttons)
-            self.sprites.add(self.levels[i].platforms)
-            self.sprites.add(self.exitSprite)
+            self.levelInit(i)
             while True:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
