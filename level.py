@@ -13,3 +13,4 @@ class Level:
         self.platforms = [platform.Platform(p) for p in levelFormat.platforms]
         self.exit = exit.Exit(levelFormat.exit)
         self.buttons = [button.Button(b) for b in levelFormat.buttons]
+        self.done = False

@@ -8,9 +8,9 @@ class Button(pygame.sprite.Sprite):
         if not Button.images:
             inactiveImgPath = os.path.join("assets", "images", "buttonInactive.png")
             activeImgPath = os.path.join("assets", "images", "buttonActive.png")
-            Button.images['inactive'] = pygame.image.load(inactiveImgPath).convert_alpha()
-            Button.images['active'] = pygame.image.load(activeImgPath).convert_alpha()
-        self.image = Button.images['inactive']
+            Button.images['inactive'] = pygame.image.load(inactiveImgPath)
+            Button.images['active'] = pygame.image.load(activeImgPath)
+        self.image = Button.images['inactive'].convert_alpha()
         self.rect = self.image.get_rect()
         self.activated = False
         self.group = buttonFormat.sets

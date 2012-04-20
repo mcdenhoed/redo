@@ -10,23 +10,31 @@ class Actor(pygame.sprite.Sprite):
     groundAcc = 8.4
     airAcc = 2.7
     left, right, onGround = False, False, False
-    def __init__(self, x = 100.0, y = 100.0):
-        print "Test"
+    def __init__(self, (x, y)):
+        print "new actor"
         pygame.sprite.Sprite.__init__(self)
         self.pos = [x,y]
         self.vel = [0.0,0.0]
         self.acc = [0.0, Actor.grav]
         self.theta = 0.0
-        print "Yo"
         self.dtheta = 0.0
         imgpath = os.path.join("assets", "images", "coolball.png")
         self.image = pygame.image.load(imgpath).convert_alpha()
         self.rect = self.image.get_rect()
-        
+        self.rect.center = self.pos
+    
+    def jump(self):
+        if self.onGround is True:
+            self.vel[1] = -40
+    def offset(self, x, y):
+        self.pos = [a[0] + a[1] for a in zip(self.pos, [x,y])]
+        self.rect.center = self.pos
+        self.vel[1] = 0
+
     def update(self, offset=[0.0, 0.0]):
         self.pos = [a[0]+a[1]+Actor.velDamp*a[2] for a in zip(self.pos, offset, self.vel)]
         #On above line: self.pos = [a +b + Actor.velDamp*c for a, b, c in zip(stuff)]
-        if self.vel[0] > self.maxVel:
+        if self.vel[0] > Actor.maxVel and self.acc[0]*self.vel[0] > 0:
             self.acc[0] = 0
 
         self.vel = [a[0]+Actor.accDamp*a[1] for a in zip(self.vel, self.acc)]
@@ -37,7 +45,7 @@ class Actor(pygame.sprite.Sprite):
             else:
                 self.acc[0] = -.12*self.vel[0]
 
-        self.rect.left, self.rect.top = int(self.pos[0]), int(self.pos[1])
+        self.rect.center = int(self.pos[0]), int(self.pos[1])
         if self.left:
             self.leftPress()
             self.dtheta = -5
