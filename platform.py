@@ -7,10 +7,17 @@ class Platform(pygame.sprite.Sprite):
         self.image = pygame.Surface((platformFormat.rect.width, platformFormat.rect.height)).convert()
         self.rect = self.image.get_rect()
         self.pos = self.rect.center = platformFormat.rect.center
-        self.visible = platformFormat.visibleDefault
+        self.default = self.visible = platformFormat.visibleDefault
         self.group = platformFormat.setBy
+        if platformFormat.setBy == "":
+            self.group = None
         
     def update(self, offset):
-       self.pos = [a + b for a,b in zip(self.pos, offset)]
-       self.rect.center = self.pos
+        self.pos = [a + b for a,b in zip(self.pos, offset)]
+        self.rect.center = self.pos
         
+    def activate(self):
+        self.visible = not self.default
+
+    def deactivate(self):
+        self.visible = self.default

@@ -43,20 +43,22 @@ class RedoGame():
         self.platformsprites.update(offset)
         for s in self.switchers:
             if s.group in self.states:
-                s.visible = True
+                s.activate()
+            else:
+                s.deactivate()
+            if s.visible:
                 self.sprites.add(s)
             else:
-                s.visible = False
-                if s in self.sprites.sprites():
-                    self.sprites.remove(s)
+                self.sprites.remove(s)
 
         sd = pygame.sprite.groupcollide(self.actorsprites, self.platformsprites, False, False)
         for a in sd:
             for p in sd[a]:
-                if a.rect.bottom > p.rect.top > a.rect.top:
-                    a.onGround = True
-                while a.rect.bottom > p.rect.top > a.rect.top:
-                    a.offset(0,-1)
+                if p.visible:
+                    if a.rect.bottom > p.rect.top > a.rect.top:
+                        a.onGround = True
+                    while a.rect.bottom > p.rect.top > a.rect.top:
+                        a.offset(0,-1)
         
     def updateButtons(self, offset):
         self.buttonsprites.update(offset)
@@ -98,8 +100,8 @@ class RedoGame():
         self.playerSprite = p.Player(self.levels[i].playerInitial)
         self.actorsprites.add(self.playerSprite)
         self.buttonsprites.add(self.levels[i].buttons)
-        self.platformsprites.add(self.levels[i].platforms)
-        self.switchers = [a for a in self.platformsprites.sprites() if a.group is not None]
+        self.platformsprites.add([a for a in self.levels[i].platforms])
+        self.switchers = [a for a in self.levels[i].platforms if a.group is not None]
         self.sprites.add(self.playerSprite)
         self.sprites.add(self.levels[i].buttons)
         self.sprites.add([a for a in self.levels[i].platforms if a.visible is True])

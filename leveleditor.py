@@ -182,6 +182,7 @@ class SimpleUI:
                 if SimpleUI.state['mode'] is not 'prop': SimpleUI.state['mode'] = 'drag'
                 else:
                     platform.setBy = eg.enterbox('ButtonGroup to that sets this platform')
+                    print "set by"+platform.setBy+"yo"
                     if eg.boolbox("Platform visible by default?", "One more thing", ["Yes", "No"]):
                         platform.visibleDefault = True
                     else:
