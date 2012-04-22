@@ -11,7 +11,6 @@ class Actor(pygame.sprite.Sprite):
     airAcc = 5 
     left, right, onGround, onWall = False, False, False, False
     def __init__(self, (x, y)):
-        print "new actor"
         pygame.sprite.Sprite.__init__(self)
         self.pos = [x,y]
         self.vel = [0.0,0.0]
@@ -25,7 +24,7 @@ class Actor(pygame.sprite.Sprite):
     
     def jump(self):
         if self.onGround is True or self.onWall is True:
-            self.vel[1] = -80
+            self.vel[1] = -100
             self.onGround, self.onWall = False, False
     def offset(self, x, y):
         self.pos = [a[0] + a[1] for a in zip(self.pos, [x,y])]

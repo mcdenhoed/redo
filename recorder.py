@@ -45,6 +45,8 @@ class Recorder(pygame.sprite.Sprite):
         #Index 1 is for the left key, 2 for the right
         self.events.append([jump, left, right])
         self.maximum += 1
+        if self.maximum > 900:
+            self.stopRecording()
 
     def stopRecording(self):
         self.isRecording = False

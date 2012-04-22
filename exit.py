@@ -6,7 +6,6 @@ class Exit(pygame.sprite.Sprite):
     image = None
     
     def __init__(self, exitFormat):
-        print "new exit"
         pygame.sprite.Sprite.__init__(self)
         if not Exit.image:
             imgpath = os.path.join("assets", "images", "exit.png")

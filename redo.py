@@ -19,7 +19,7 @@ class RedoGame():
     def __init__(self):
         pygame.init()
         self.timer = pygame.time.Clock()
-        self.screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)#(RedoGame.width, RedoGame.height), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
         self.width, self.height = self.screen.get_size()
         ###########################
         ##initializing game stuff##
@@ -176,6 +176,7 @@ class RedoGame():
         for r in self.recordersprites:
             if r.recording is not None:
                 r.recording.remove([self.sprites, self.actorsprites])
+                r.stopPlaying()
 
     def mainLoop(self):
         i = 0    
