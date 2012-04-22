@@ -8,7 +8,7 @@ class Actor(pygame.sprite.Sprite):
     accDamp = .35
     accDefault = 3
     groundAcc = 8.4
-    airAcc = 2.7
+    airAcc = 5 
     left, right, onGround, onWall = False, False, False, False
     def __init__(self, (x, y)):
         print "new actor"

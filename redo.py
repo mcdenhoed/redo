@@ -1,5 +1,5 @@
 ###################
-##Importing Stuff##
+##Importing Stuff##p
 ###################
 import pygame
 import sys, os
@@ -19,7 +19,8 @@ class RedoGame():
     def __init__(self):
         pygame.init()
         self.timer = pygame.time.Clock()
-        self.screen = pygame.display.set_mode((RedoGame.width, RedoGame.height))
+        self.screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)#(RedoGame.width, RedoGame.height), pygame.FULLSCREEN)
+        self.width, self.height = self.screen.get_size()
         ###########################
         ##initializing game stuff##
         ###########################
@@ -38,6 +39,12 @@ class RedoGame():
         self.actorsprites = pygame.sprite.Group()
         self.platformsprites = pygame.sprite.Group()
         self.buttonsprites = pygame.sprite.Group()
+        self.recordersprites = pygame.sprite.Group()
+        self.currentRecorder = None
+        self.recording = False
+        self.jump = False
+        self.ticks = 0
+
 
     def updatePlatforms(self, offset):
         self.platformsprites.update(offset)
@@ -66,15 +73,21 @@ class RedoGame():
                             a.vel[1] = 0
                         if a.rect.right > p.rect.left > a.rect.left and not a.rect.centery < p.rect.top:
                             a.offset(-1,0)
-                            a.vel[0] = -.3*a.vel[0]
+                            a.vel[0] = -.7*a.vel[0]
                         if a.rect.left < p.rect.right < a.rect.right and not a.rect.centery < p.rect.top:
                             a.offset(1,0)
-                            a.vel[0] = -.3*a.vel[0]
+                            a.vel[0] = -.7*a.vel[0]
                         if a.rect.top < p.rect.bottom < a.rect.bottom:
                             a.offset(0,1)
                             a.vel[1] = 0
                     
-                    
+    def updateRecorders(self, offset):
+        self.recordersprites.update(offset)
+        if self.recording:
+            self.currentRecorder.record(self.jump, self.playerSprite.left, self.playerSprite.right)
+            for r in self.recordersprites:
+                if r.isPlaying:
+                    r.play() 
         
     def updateButtons(self, offset):
         self.buttonsprites.update(offset)
@@ -95,7 +108,9 @@ class RedoGame():
         self.actorsprites.update(off)
         self.updateButtons(off)
         self.updatePlatforms(off)
+        self.updateRecorders(off)
         self.exitSprite.update(off)
+
 
     def draw(self):
         self.sprites.clear(self.screen, self.background)
@@ -118,11 +133,13 @@ class RedoGame():
         self.actorsprites.add(self.playerSprite)
         self.buttonsprites.add(self.levels[i].buttons)
         self.platformsprites.add(self.levels[i].platforms)
+        self.recordersprites.add(self.levels[i].recorders)
         self.switchers = [a for a in self.platformsprites.sprites() if a.group is not None]
         self.sprites.add(self.playerSprite)
         self.sprites.add(self.buttonsprites.sprites())
         self.sprites.add(self.platformsprites.sprites())
         self.sprites.add(self.exitSprite)
+        self.sprites.add(self.recordersprites.sprites())
 
     def resetLevel(self):
         for p in self.platformsprites.sprites():
@@ -131,24 +148,61 @@ class RedoGame():
             b.reset()
         for a in self.actorsprites.sprites():
             a.reset()
-        #recorders
+        self.actorsprites.empty()
+        self.actorsprites.add(self.playerSprite)
+        for r in self.recordersprites.sprites():
+            r.reset()
         self.exitSprite.reset()
+
+
+    def startPlayingStuff(self):
+        for s in self.recordersprites:
+            if s.isSaved and not s.isRecording:
+                s.startPlaying()
+                self.sprites.add(s.recording)
+                self.actorsprites.add(s.recording)
+
+    def startRecording(self):
+        sp = pygame.sprite.spritecollide(self.playerSprite, self.recordersprites, False)
+        self.currentRecorder = sp.pop()
+        self.currentRecorder.startRecording()
+        self.startPlayingStuff()
+        self.recording = True
+
+    def stopRecording(self):
+        self.recording = False
+        self.currentRecorder.stopRecording()
+        self.currentRecorder = None
+        for r in self.recordersprites:
+            if r.recording is not None:
+                r.recording.remove([self.sprites, self.actorsprites])
+
     def mainLoop(self):
         i = 0    
         while i < len(self.levels):
             self.levelInit(i)
             while True:
+                self.jump = False
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        #pygame.quit()
                         sys.exit()
                     elif event.type == pygame.KEYDOWN:
-                        if event.key == K_w or event.key == K_UP:
+                        if event.key == K_ESCAPE:
+                            sys.exit()
+                        elif event.key == K_w or event.key == K_UP:
                             self.playerSprite.jump()
+                            self.jump = True
                         elif event.key == K_a or event.key == K_LEFT:
                             self.playerSprite.left = True
                         elif event.key == K_d or event.key == K_RIGHT:
                             self.playerSprite.right = True
+                        elif event.key == K_SPACE:
+                            if self.recording:
+                                self.stopRecording()
+                            elif pygame.sprite.spritecollideany(self.playerSprite, self.recordersprites):
+                                print 'YO'
+                                self.startRecording()
+
                     elif event.type == pygame.KEYUP:
                         if event.key == K_a or event.key == K_LEFT:
                             self.playerSprite.left = False
