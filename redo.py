@@ -31,8 +31,8 @@ class RedoGame():
             temp = l.Level(os.path.join(path,inFile))
             self.levels.append(temp)
 
-        self.background = pygame.Surface([RedoGame.width,RedoGame.height])
-        self.background.fill([200,200,200])
+        self.background = pygame.image.load(os.path.join('assets', 'images', 'background.png')).convert()
+        self.background = pygame.transform.scale(self.background, (self.width, self.height))
         self.screen.blit(self.background, [0,0])
         self.sprites = pygame.sprite.RenderUpdates()
         self.actorsprites = pygame.sprite.Group()
@@ -95,19 +95,28 @@ class RedoGame():
         self.sprites.empty()
         self.platformsprites.empty()
         self.buttonsprites.empty()
+        self.switchers = list()
         self.camera = c.Camera(self.width, self.height)
         self.exitSprite = self.levels[i].exit
         self.playerSprite = p.Player(self.levels[i].playerInitial)
         self.actorsprites.add(self.playerSprite)
         self.buttonsprites.add(self.levels[i].buttons)
-        self.platformsprites.add([a for a in self.levels[i].platforms])
-        self.switchers = [a for a in self.levels[i].platforms if a.group is not None]
+        self.platformsprites.add(self.levels[i].platforms)
+        self.switchers = [a for a in self.platformsprites.sprites() if a.group is not None]
         self.sprites.add(self.playerSprite)
-        self.sprites.add(self.levels[i].buttons)
-        self.sprites.add([a for a in self.levels[i].platforms if a.visible is True])
+        self.sprites.add(self.buttonsprites.sprites())
+        self.sprites.add(self.platformsprites.sprites())
         self.sprites.add(self.exitSprite)
 
-
+    def resetLevel(self):
+        for p in self.platformsprites.sprites():
+            p.reset()
+        for b in self.buttonsprites.sprites():
+            b.reset()
+        for a in self.actorsprites.sprites():
+            a.reset()
+        #recorders
+        self.exitSprite.reset()
     def mainLoop(self):
         i = 0    
         while i < len(self.levels):
@@ -136,6 +145,7 @@ class RedoGame():
                     print "level complete"
                     break;
                 elif self.playerSprite.vel[1] > 250:
+                    self.resetLevel()
                     print "You dead"
                     break;
                 self.timer.tick(60)

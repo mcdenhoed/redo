@@ -18,10 +18,10 @@ class Actor(pygame.sprite.Sprite):
         self.acc = [0.0, Actor.grav]
         self.theta = 0.0
         self.dtheta = 0.0
-        imgpath = os.path.join("assets", "images", "coolball.png")
-        self.image = pygame.image.load(imgpath).convert_alpha()
+        #imgpath = os.path.join("assets", "images", "coolball.png")
+        self.image = pygame.Surface((30,30)).convert()#pygame.image.load(imgpath).convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.center = self.pos
+        self.initialpos = self.rect.center = self.pos
     
     def jump(self):
         if self.onGround is True:
@@ -63,4 +63,8 @@ class Actor(pygame.sprite.Sprite):
 
     def rightPress(self):
         if self.onGround: self.acc[0] = Actor.groundAcc
-        else: self.acc[0] = Actor.airAcc      
+        else: self.acc[0] = Actor.airAcc
+
+    def reset(self):
+        self.pos = self.initialpos
+        self.rect.center = self.pos    

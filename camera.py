@@ -6,8 +6,8 @@ class Camera(pygame.sprite.Sprite):
         self.pos = [0.0, 0.0]
         self.vel = [0.0, 0.0]
         self.rect = pygame.Rect(0, 0, width, height)
-        self.rect.inflate_ip(-width/2, -height/2)
-        self.rect.move_ip(-width/4, 0)
+        self.rect.inflate_ip(-width/4, -height/2)
+        self.rect.move_ip(-width/6, 0)
         self.minsize = self.rect.size
         #self.rect.move_ip(0, .6*height)
 
