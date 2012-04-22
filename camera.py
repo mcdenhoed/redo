@@ -12,7 +12,6 @@ class Camera(pygame.sprite.Sprite):
         #self.rect.move_ip(0, .6*height)
 
     def update(self, player):
-        print self.rect.size
         if not self.rect.collidepoint(player):
             self.vel = [a-b for a,b in zip(self.rect.center, player)]
             self.pos = [a+Camera.damper*b for a,b in zip(self.pos,self.vel)]
