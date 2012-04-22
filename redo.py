@@ -55,10 +55,26 @@ class RedoGame():
         for a in sd:
             for p in sd[a]:
                 if p.visible:
-                    if a.rect.bottom > p.rect.top > a.rect.top:
+                    if p.rect.contains(a.rect): break
+                    if a.rect.bottom > p.rect.top > a.rect.top or a.rect.right > p.rect.left > a.rect.left or a.rect.left < p.rect.right < a.rect.right:
                         a.onGround = True
-                    while a.rect.bottom > p.rect.top > a.rect.top:
-                        a.offset(0,-1)
+                    if a.rect.top < p.rect.bottom <  a.rect.bottom:
+                        a.onGround = False
+                    while pygame.sprite.collide_rect(a,p):
+                        if a.rect.bottom > p.rect.top > a.rect.top:
+                            a.offset(0,-1)
+                            a.vel[1] = 0
+                        if a.rect.right > p.rect.left > a.rect.left and not a.rect.centery < p.rect.top:
+                            a.offset(-1,0)
+                            a.vel[0] = -.3*a.vel[0]
+                        if a.rect.left < p.rect.right < a.rect.right and not a.rect.centery < p.rect.top:
+                            a.offset(1,0)
+                            a.vel[0] = -.3*a.vel[0]
+                        if a.rect.top < p.rect.bottom < a.rect.bottom:
+                            a.offset(0,1)
+                            a.vel[1] = 0
+                    
+                    
         
     def updateButtons(self, offset):
         self.buttonsprites.update(offset)

@@ -1,7 +1,7 @@
 import pygame
 
 class Camera(pygame.sprite.Sprite):
-    damper = .0025
+    damper = .003
     def __init__(self, width, height):
         self.pos = [0.0, 0.0]
         self.vel = [0.0, 0.0]
