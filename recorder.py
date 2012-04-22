@@ -16,7 +16,7 @@ class Recorder(pygame.sprite.Sprite):
         
         self.image = Recorder.images['idle']
         self.rect = self.image.get_rect()
-        self.initialpos = self.pos = self.rect.bottomleft = recorderformat.rect.bottomleft
+        self.initialpos = self.pos = self.rect.midbottom = recorderformat.rect.midbottom
         self.events = deque()
         self.recording = None
         self.isRecording = False
@@ -26,7 +26,7 @@ class Recorder(pygame.sprite.Sprite):
 
     def update(self, offset):
         self.pos = [a+b for a,b in zip(self.pos, offset)]
-        self.rect.bottomleft = self.pos
+        self.rect.midbottom = self.pos
 
     def startRecording(self):
         self.isRecording = True
@@ -84,4 +84,4 @@ class Recorder(pygame.sprite.Sprite):
 
     def reset(self):
         self.pos = self.initialpos
-        self.rect.center = self.pos
+        self.rect.midbottom = self.pos

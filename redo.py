@@ -1,5 +1,5 @@
 ###################
-##Importing Stuff##p
+##Importing Stuff##
 ###################
 import pygame
 import sys, os
@@ -28,7 +28,9 @@ class RedoGame():
         self.levels = []
         self.states = set()
         self.switchers = []
-        for inFile in os.listdir(path):
+        files = os.listdir(path)
+        files.sort()
+        for inFile in files:
             temp = l.Level(os.path.join(path,inFile))
             self.levels.append(temp)
 
@@ -84,7 +86,9 @@ class RedoGame():
     def updateRecorders(self, offset):
         self.recordersprites.update(offset)
         if self.recording:
-            self.currentRecorder.record(self.jump, self.playerSprite.left, self.playerSprite.right)
+            if self.currentRecorder:
+                self.currentRecorder.record(self.jump, self.playerSprite.left, self.playerSprite.right)
+            else: self.stopRecording()
             for r in self.recordersprites:
                 if r.isPlaying:
                     r.play() 
@@ -123,10 +127,13 @@ class RedoGame():
 
     def levelInit(self, i):
         self.actorsprites.empty()
+        self.recordersprites.empty()
         self.sprites.empty()
         self.platformsprites.empty()
         self.buttonsprites.empty()
         self.switchers = list()
+        self.currentRecorder = None
+        self.recording = False
         self.camera = c.Camera(self.width, self.height)
         self.exitSprite = self.levels[i].exit
         self.playerSprite = p.Player(self.levels[i].playerInitial)
@@ -142,6 +149,10 @@ class RedoGame():
         self.sprites.add(self.recordersprites.sprites())
 
     def resetLevel(self):
+        self.recording = False
+        if self.currentRecorder:
+            self.currentRecorder.stopRecording()
+            self.currentRecorder = None
         for p in self.platformsprites.sprites():
             p.reset()
         for b in self.buttonsprites.sprites():
@@ -165,12 +176,14 @@ class RedoGame():
     def startRecording(self):
         sp = pygame.sprite.spritecollide(self.playerSprite, self.recordersprites, False)
         self.currentRecorder = sp.pop()
+        self.playerSprite.setLocation(self.currentRecorder.rect.center)
         self.currentRecorder.startRecording()
         self.startPlayingStuff()
         self.recording = True
 
     def stopRecording(self):
         self.recording = False
+        self.playerSprite.setLocation(self.currentRecorder.rect.center)
         self.currentRecorder.stopRecording()
         self.currentRecorder = None
         for r in self.recordersprites:
@@ -201,7 +214,6 @@ class RedoGame():
                             if self.recording:
                                 self.stopRecording()
                             elif pygame.sprite.spritecollideany(self.playerSprite, self.recordersprites):
-                                print 'YO'
                                 self.startRecording()
 
                     elif event.type == pygame.KEYUP:
@@ -213,11 +225,10 @@ class RedoGame():
                 self.draw()
                 if pygame.sprite.spritecollideany(self.exitSprite, self.actorsprites):
                     i+=1
-                    print "level complete"
                     break;
                 elif self.playerSprite.vel[1] > 250:
+                    if self.recording: self.stopRecording()
                     self.resetLevel()
-                    print "You dead"
                     break;
                 self.timer.tick(60)
 

@@ -6,12 +6,13 @@ class Camera(pygame.sprite.Sprite):
         self.pos = [0.0, 0.0]
         self.vel = [0.0, 0.0]
         self.rect = pygame.Rect(0, 0, width, height)
-        self.rect.inflate_ip(-width/2.5, -height/2)
+        self.rect.inflate_ip(-.725*width, -.5*height)
         self.rect.move_ip(-width/8, 0)
         self.minsize = self.rect.size
         #self.rect.move_ip(0, .6*height)
 
     def update(self, player):
+        print self.rect.size
         if not self.rect.collidepoint(player):
             self.vel = [a-b for a,b in zip(self.rect.center, player)]
             self.pos = [a+Camera.damper*b for a,b in zip(self.pos,self.vel)]

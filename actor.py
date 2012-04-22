@@ -21,7 +21,11 @@ class Actor(pygame.sprite.Sprite):
         self.image = pygame.Surface((30,30)).convert()#pygame.image.load(imgpath).convert_alpha()
         self.rect = self.image.get_rect()
         self.initialpos = self.rect.center = self.pos
-    
+
+    def setLocation(self,(x,y)):
+        self.pos = [x,y]
+        self.vel = [0,0]
+        self.rect.center = self.pos
     def jump(self):
         if self.onGround is True or self.onWall is True:
             self.vel[1] = -100
