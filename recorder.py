@@ -9,10 +9,10 @@ class Recorder(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         path = os.path.join('assets', 'images')
         if not Recorder.images:
-            Recorder.images['idle'] = pygame.image.load(os.path.join(path,'recorderidle.png')).convert_alpha()
-            Recorder.images['play'] = pygame.image.load(os.path.join(path,'recorderplaying.png')).convert_alpha()
-            Recorder.images['recording'] = pygame.image.load(os.path.join(path,'recorderrecording.png')).convert_alpha()
-            Recorder.images['saved'] = pygame.image.load(os.path.join(path,'recordersaved.png')).convert_alpha()
+            Recorder.images['idle'] = pygame.image.load(os.path.join(path,'recorderidle2.png')).convert_alpha()
+            Recorder.images['play'] = pygame.image.load(os.path.join(path,'recorderplaying2.png')).convert_alpha()
+            Recorder.images['recording'] = pygame.image.load(os.path.join(path,'recorderrecording2.png')).convert_alpha()
+            Recorder.images['saved'] = pygame.image.load(os.path.join(path,'recordersaved2.png')).convert_alpha()
         
         self.image = Recorder.images['idle']
         self.rect = self.image.get_rect()

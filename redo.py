@@ -34,7 +34,7 @@ class RedoGame():
             temp = l.Level(os.path.join(path,inFile))
             self.levels.append(temp)
 
-        self.background = pygame.image.load(os.path.join('assets', 'images', 'background.png')).convert()
+        self.background = pygame.image.load(os.path.join('assets', 'images', 'background2.png')).convert()
         self.background = pygame.transform.scale(self.background, (self.width, self.height))
         self.screen.blit(self.background, [0,0])
         self.sprites = pygame.sprite.RenderUpdates()
