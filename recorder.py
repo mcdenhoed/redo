@@ -23,7 +23,6 @@ class Recorder(pygame.sprite.Sprite):
         self.isSaved = False
         self.isPlaying = False
         self.isIdle = False
-
     def update(self, offset):
         self.pos = [a+b for a,b in zip(self.pos, offset)]
         self.rect.midbottom = self.pos

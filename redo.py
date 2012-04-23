@@ -37,7 +37,7 @@ class RedoGame():
         self.background = pygame.image.load(os.path.join('assets', 'images', 'background2.png')).convert()
         self.background = pygame.transform.scale(self.background, (self.width, self.height))
         self.screen.blit(self.background, [0,0])
-        self.sprites = pygame.sprite.RenderUpdates()
+        self.sprites = pygame.sprite.OrderedUpdates()
         self.actorsprites = pygame.sprite.Group()
         self.platformsprites = pygame.sprite.Group()
         self.buttonsprites = pygame.sprite.Group()
@@ -142,12 +142,11 @@ class RedoGame():
         self.platformsprites.add(self.levels[i].platforms)
         self.recordersprites.add(self.levels[i].recorders)
         self.switchers = [a for a in self.platformsprites.sprites() if a.group is not None]
-        self.sprites.add(self.playerSprite)
-        self.sprites.add(self.buttonsprites.sprites())
         self.sprites.add(self.platformsprites.sprites())
         self.sprites.add(self.exitSprite)
         self.sprites.add(self.recordersprites.sprites())
-
+        self.sprites.add(self.playerSprite)
+        self.sprites.add(self.buttonsprites.sprites())
     def resetLevel(self):
         self.recording = False
         if self.currentRecorder:

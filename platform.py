@@ -11,7 +11,6 @@ class Platform(pygame.sprite.Sprite):
         self.group = platformFormat.setBy
         if platformFormat.setBy == "":
             self.group = None
-        
     def update(self, offset):
         self.pos = [a + b for a,b in zip(self.pos, offset)]
         self.rect.center = self.pos
