@@ -199,6 +199,7 @@ class SimpleUI:
         for recorder in self.gameRecorders:
             if recorder.rect.collidepoint(x,y):
                 self.selected = recorder.rect
+                SimpleUI.state['mode'] = 'drag'
                 but = True
         if self.gamePlayer.rect.collidepoint(x,y):
             self.selected = self.gamePlayer.rect
