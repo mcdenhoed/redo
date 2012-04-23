@@ -3,6 +3,7 @@ import pygame
 from levelformat import Recorder as r
 from collections import deque
 from recording import Recording
+import copy
 class Recorder(pygame.sprite.Sprite):
     images = {}
     def __init__(self, recorderformat):
@@ -36,7 +37,7 @@ class Recorder(pygame.sprite.Sprite):
         self.events = deque()
         self.image = Recorder.images['recording']
         self.backup = deque()
-        self.index = self.maximum = 0
+        self.index , self.maximum = [0,0]
 
     def record(self, jump, left, right):
         #Oh, no, I'm actually writing documentation!
@@ -44,35 +45,36 @@ class Recorder(pygame.sprite.Sprite):
         #Index 1 is for the left key, 2 for the right
         self.events.append([jump, left, right])
         self.maximum += 1
-        if self.maximum > 900:
+        if self.maximum >= 900:
             self.stopRecording()
-
     def stopRecording(self):
         self.isRecording = False
         self.isSaved = True
         self.isPlaying = False
         self.recording = None
         self.image = Recorder.images['saved']
-
+    
     def startPlaying(self):
         self.isRecording = False
-        self.isSaved = True
+        self.isSaved = False
         self.isPlaying = True
         self.recording = Recording(self.rect.center)
+        self.recording.onGround = True
         self.image = Recorder.images['play']
         self.index = 0
 
     def play(self):
-        if self.index <= self.maximum:
+        if self.index < self.maximum:
             jump, left, right = self.events.popleft()
-            if jump: self.recording.jump()
+            if jump: 
+                self.recording.jump()
+                print "actor jump"
             if left: self.recording.leftPress()
             elif right: self.recording.rightPress()
             self.events.append([jump,left,right])
             self.index += 1
         else:
             self.stopPlaying()
-            
         
     def stopPlaying(self):
         self.isRecording = False
@@ -80,7 +82,7 @@ class Recorder(pygame.sprite.Sprite):
         self.isPlaying = False
         self.image = Recorder.images['saved']
         for i in range(self.index, self.maximum):
-            self.events.append(self.events.popleft())
+            self.events.append(self.events.popleft())        
 
     def reset(self):
         self.pos = self.initialpos

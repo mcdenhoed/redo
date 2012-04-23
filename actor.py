@@ -48,17 +48,11 @@ class Actor(pygame.sprite.Sprite):
             else:
                 self.acc[0] = -.12*self.vel[0]
 
-        self.rect.center = int(self.pos[0]), int(self.pos[1])
+        self.rect.center = self.pos 
         if self.left:
             self.leftPress()
-            self.dtheta = -5
         elif self.right:
             self.rightPress()
-            self.dtheta = 5
-        else:
-            self.dtheta *= .95
-        self.theta += self.dtheta
-        self.theta = self.theta%360
 
     def leftPress(self):
         if self.onGround: self.acc[0] = -Actor.groundAcc

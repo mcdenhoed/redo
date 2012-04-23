@@ -68,11 +68,11 @@ class RedoGame():
                     if a.rect.bottom > p.rect.top > a.rect.top or a.rect.right > p.rect.left > a.rect.left or a.rect.left < p.rect.right < a.rect.right:
                         a.onGround = True
                     if a.rect.top < p.rect.bottom <  a.rect.bottom:
-                        a.onGround = False
+                        pass #a.onGround = False
                     while pygame.sprite.collide_rect(a,p):
                         if a.rect.bottom > p.rect.top > a.rect.top:
                             a.offset(0,-1)
-                            a.vel[1] = 0
+                            if a.vel[1] != -100: a.vel[1] = 0
                         if a.rect.right > p.rect.left > a.rect.left and not a.rect.centery < p.rect.top:
                             a.offset(-1,0)
                             a.vel[0] = -.7*a.vel[0]
@@ -82,11 +82,10 @@ class RedoGame():
                         if a.rect.top < p.rect.bottom < a.rect.bottom:
                             a.offset(0,1)
                             a.vel[1] = 0
-                    
     def updateRecorders(self, offset):
         self.recordersprites.update(offset)
         if self.recording:
-            if self.currentRecorder:
+            if self.currentRecorder and self.currentRecorder.isRecording:
                 self.currentRecorder.record(self.jump, self.playerSprite.left, self.playerSprite.right)
             else: self.stopRecording()
             for r in self.recordersprites:
@@ -108,13 +107,12 @@ class RedoGame():
     def update(self):
         """Updates objects in the scene."""
         #sprites.update()
-        off = self.camera.update(self.playerSprite.rect.center)
+        off = self.camera.update(self.playerSprite.pos)
         self.actorsprites.update(off)
         self.updateButtons(off)
-        self.updatePlatforms(off)
         self.updateRecorders(off)
         self.exitSprite.update(off)
-
+        self.updatePlatforms(off)
 
     def draw(self):
         self.sprites.clear(self.screen, self.background)
@@ -187,8 +185,8 @@ class RedoGame():
         self.currentRecorder = None
         for r in self.recordersprites:
             if r.recording is not None:
-                r.recording.remove([self.sprites, self.actorsprites])
                 r.stopPlaying()
+                r.recording.remove([self.sprites, self.actorsprites])
 
     def mainLoop(self):
         i = 0    
