@@ -35,7 +35,7 @@ class Actor(pygame.sprite.Sprite):
         self.rect.center = self.pos
 
     def update(self, offset=[0.0, 0.0]):
-        self.pos = [a[0]+a[1]+Actor.velDamp*a[2] for a in zip(self.pos, offset, self.vel)]
+        self.pos = [a+b+Actor.velDamp*c for a,b,c in zip(self.pos, offset, self.vel)]
         #On above line: self.pos = [a +b + Actor.velDamp*c for a, b, c in zip(stuff)]
         if abs(self.vel[0]) > Actor.maxVel and self.acc[0]*self.vel[0] > 0:
             self.acc[0] = 0

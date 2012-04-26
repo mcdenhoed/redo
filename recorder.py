@@ -68,7 +68,6 @@ class Recorder(pygame.sprite.Sprite):
             jump, left, right = self.events.popleft()
             if jump: 
                 self.recording.jump()
-                print "actor jump"
             if left: self.recording.leftPress()
             elif right: self.recording.rightPress()
             self.events.append([jump,left,right])
