@@ -193,7 +193,6 @@ class RedoGame():
         while i < len(self.levels):
             self.levelInit(i)
             while True:
-                self.jump = False
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         sys.exit()
@@ -217,7 +216,9 @@ class RedoGame():
                         if event.key == K_a or event.key == K_LEFT:
                             self.playerSprite.left = False
                         elif event.key == K_d or event.key == K_RIGHT:
-                            self.playerSprite.right = False 
+                            self.playerSprite.right = False
+                        elif event.key == K_w or event.key == K_UP:
+                            self.jump = False
                 self.update()
                 self.draw()
                 if pygame.sprite.spritecollideany(self.exitSprite, self.actorsprites):
