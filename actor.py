@@ -17,8 +17,8 @@ class Actor(pygame.sprite.Sprite):
         self.acc = [0.0, Actor.grav]
         self.theta = 0.0
         self.dtheta = 0.0
-        #imgpath = os.path.join("assets", "images", "coolball.png")
-        self.image = pygame.Surface((30,30)).convert()#pygame.image.load(imgpath).convert_alpha()
+        imgpath = os.path.join("assets", "images", "rect.png")
+        self.image = pygame.Surface((30,30)).convert_alpha()#pygame.image.load(imgpath).convert_alpha()
         self.rect = self.image.get_rect()
         self.initialpos = self.rect.center = self.pos
 
