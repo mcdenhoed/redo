@@ -19,8 +19,8 @@ All code is BSD licensed.
 ##What's next for the project?
 Lots (once I get the time)! Right now my main concerns are...
 
-###
-There were some bugs. I fixed them. Most ended up being stupid little things. Go figure.
+### Crushing Bugs
+There's some killer bugs in there. One of the most mysterious is slight variations in the motion of the recordings.  I think it might be due to some sort of weird rounding error involving camera motion.  I might define everything in terms of a universal coordinate system instead of the relative one I'm using now. Not sure if it will help. This is the main bug I see. There is also some jittering which I think can be fixed by reordering some of the stuff that I did collision detection with.
 
 ### Polish
 I might refine the controls more to make it more playable. I'm also thinking of adding some visual flaire, like some fake bloom filters (using a pre-made image instead of a black rectangle, for instance. Also, I might add in the paralax background that the java version had. What I think might be fun is if the next levels can be seen in the background as the user plays through a given level. Just a thought. I also want to add little flourishes like maybe a small cloud of tiny rectangles from the player upon a jump. We shall see.
