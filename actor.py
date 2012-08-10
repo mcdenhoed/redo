@@ -10,8 +10,9 @@ class Actor(pygame.sprite.Sprite):
     groundAcc = 8.4
     airAcc = 5 
     left, right, onGround, onWall = False, False, False, False
-    def __init__(self, (x, y)):
+    def __init__(self, acc):
         pygame.sprite.Sprite.__init__(self)
+        x, y = acc
         self.pos = [x,y]
         self.vel = [0.0,0.0]
         self.acc = [0.0, Actor.grav]
@@ -22,7 +23,8 @@ class Actor(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.initialpos = self.rect.center = self.pos
 
-    def setLocation(self,(x,y)):
+    def setLocation(self, pos):
+        x,y = pos
         self.pos = [x,y]
         self.vel = [0,0]
         self.rect.center = self.pos

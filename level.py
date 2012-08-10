@@ -1,5 +1,5 @@
 import sys, os, pygame
-import cPickle as pickle
+import pickle
 import platform
 import exit
 import recorder
