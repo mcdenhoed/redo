@@ -199,7 +199,7 @@ class RedoGame():
                     elif event.type == pygame.KEYDOWN:
                         if event.key == K_ESCAPE:
                             sys.exit()
-                        elif event.key == K_w or event.key == K_UP:
+                        elif event.key in [K_w, K_UP]:
                             self.playerSprite.jump()
                             self.jump = True
                         elif event.key == K_a or event.key == K_LEFT:

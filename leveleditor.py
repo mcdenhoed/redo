@@ -1,5 +1,5 @@
 import pygame
-import cPickle as pickle
+import pickle
 import sys, os
 from pygame.locals import *
 import easygui as eg
@@ -29,7 +29,7 @@ class MyButton:
         textpos = text.get_rect(center=self.rect.center)
         surface.blit(text, textpos)
     def do(self):
-        print "Impbement in subclasses"
+        print("Implement in subclasses")
 
 class RectButton(MyButton):
     def __init__(self, x, y, w, h, app):
@@ -167,7 +167,8 @@ class SimpleUI:
                     self.handleMouseMotion(pygame.mouse.get_pos())
             return exit
 
-    def handleMouseDown(self, (x, y)):
+    def handleMouseDown(self, coords):
+        x,y = coords
         but = False
         SimpleUI.state['clicked'] = True
         for button in self.buttons:
@@ -182,7 +183,7 @@ class SimpleUI:
                 if SimpleUI.state['mode'] is not 'prop': SimpleUI.state['mode'] = 'drag'
                 else:
                     platform.setBy = eg.enterbox('ButtonGroup to that sets this platform')
-                    print "set by"+platform.setBy+"yo"
+                    print("set by"+platform.setBy+"yo")
                     if eg.boolbox("Platform visible by default?", "One more thing", ["Yes", "No"]):
                         platform.visibleDefault = True
                     else:
@@ -227,7 +228,8 @@ class SimpleUI:
             if SimpleUI.state['mode'] == 'move':
                 SimpleUI.LAST = [x,y]
                              
-    def handleMouseUp(self, (x,y)):
+    def handleMouseUp(self, coords):
+        x,y = coords
         if SimpleUI.state['mode'] == 'rect' and SimpleUI.state['clicked'] is True:
            width, height = [a-b for a,b in zip([x,y], SimpleUI.LAST)]
            temp = levelformat.Platform(SimpleUI.LAST[0], SimpleUI.LAST[1], width, height)
@@ -236,7 +238,8 @@ class SimpleUI:
         SimpleUI.state['clicked'] = False
         self.selected = None
 
-    def handleMouseMotion(self, (x,y)):
+    def handleMouseMotion(self, coords):
+        x,y = coords
         if SimpleUI.state['clicked'] is True: 
             xo,yo = [a-b for a,b in zip([x,y], SimpleUI.CURRENT)]
             if SimpleUI.state['mode'] is 'move':
@@ -245,10 +248,12 @@ class SimpleUI:
                 self.moveSomething((xo,yo))
         SimpleUI.CURRENT = [x,y]
             
-    def moveSomething(self, (x,y)):
+    def moveSomething(self, coords):
+        x,y = coords
         self.selected.move_ip(x,y)
 
-    def moveEverything(self, (x,y)):
+    def moveEverything(self, coords):
+        x,y = coords
         for gbutton in self.gameButtons:
             gbutton.rect.move_ip(x,y)
         for recorder in self.gameRecorders:

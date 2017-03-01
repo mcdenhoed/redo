@@ -2,13 +2,13 @@ import pygame
 import sys, os
 
 class Actor(pygame.sprite.Sprite):
-    grav = 6#2.9
-    maxVel = 70
+    grav = 25#2.9
+    maxVel = 120
     velDamp = .1
     accDamp = .35
     accDefault = 3
-    groundAcc = 8.4
-    airAcc = 5 
+    groundAcc = 30
+    airAcc = 10 
     left, right, onGround, onWall = False, False, False, False
     def __init__(self, acc):
         pygame.sprite.Sprite.__init__(self)
@@ -19,7 +19,8 @@ class Actor(pygame.sprite.Sprite):
         self.theta = 0.0
         self.dtheta = 0.0
         imgpath = os.path.join("assets", "images", "rect.png")
-        self.image = pygame.Surface((30,30)).convert_alpha()#pygame.image.load(imgpath).convert_alpha()
+        self.image = pygame.Surface((30,30), pygame.SRCALPHA, 32).convert_alpha()#pygame.image.load(imgpath).convert_alpha()
+        self.image.fill((0,0,0,100))
         self.rect = self.image.get_rect()
         self.initialpos = self.rect.center = self.pos
 
@@ -30,7 +31,7 @@ class Actor(pygame.sprite.Sprite):
         self.rect.center = self.pos
     def jump(self):
         if self.onGround is True or self.onWall is True:
-            self.vel[1] = -100
+            self.vel[1] = -200
             self.onGround, self.onWall = False, False
     def offset(self, x, y):
         self.pos = [a[0] + a[1] for a in zip(self.pos, [x,y])]
@@ -46,7 +47,7 @@ class Actor(pygame.sprite.Sprite):
         
         if not (self.left or self.right):
             if (self.onGround):
-                self.acc[0] = -.2*self.vel[0]
+                self.acc[0] = -.4*self.vel[0]
             else:
                 self.acc[0] = -.12*self.vel[0]
 

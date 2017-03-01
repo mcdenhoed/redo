@@ -1,7 +1,7 @@
 import pygame
 
 class Camera(pygame.sprite.Sprite):
-    damper = .003
+    damper = .01
     def __init__(self, width, height):
         
         self.pos = [0.0, 0.0]
@@ -20,7 +20,7 @@ class Camera(pygame.sprite.Sprite):
             self.pos = [a+Camera.damper*b for a,b in zip(self.pos,self.vel)]
             self.growArea()
         else:
-            self.pos = [.9*a for a in self.pos]
+            self.pos = [.8*a for a in self.pos]
             if self.rect.size > self.minsize:
                 self.shrinkArea()
             else:
