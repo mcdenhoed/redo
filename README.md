@@ -8,10 +8,11 @@ More information about the game's development is at the [project page][gh-pages]
 [gh-pages]: http://mcdenhoed.github.com/redo/
 
 
+
 ## Controls
-wasd to move.
-Up to jump.
-Space to start/stop recording.
+<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move.
+<kbd>↑</kbd> to jump.
+<kbd>Space</kbd> to start/stop recording.
 
 ## Licensing
 All code is BSD licensed.
