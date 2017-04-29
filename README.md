@@ -1,4 +1,4 @@
-#REDO Game
+# REDO Game
 
 This game is written in Python and uses the [pygame] engine. Thus, both Python and pygame need to be installed to run this game.
 
@@ -8,15 +8,16 @@ More information about the game's development is at the [project page][gh-pages]
 [gh-pages]: http://mcdenhoed.github.com/redo/
 
 
-##Controls
+
+## Controls
 <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move.
 <kbd>↑</kbd> to jump.
 <kbd>Space</kbd> to start/stop recording.
 
-##Licensing
+## Licensing
 All code is BSD licensed.
 
-##What's next for the project?
+## What's next for the project?
 Lots (once I get the time)! Right now my main concerns are...
 
 ### Crushing Bugs
