@@ -3,7 +3,7 @@ name = "redo"
 version = "0.1.0"
 description = ""
 authors = ["Mark <mcdenhoed@users.noreply.github.com>"]
-license = "MIT"
+license = "BSD"
 readme = "README.md"
 
 [tool.poetry.dependencies]
